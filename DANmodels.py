@@ -186,3 +186,72 @@ class NN3DAN_RANDOM(nn.Module):
         x = self.dropout(x)
         x = self.fc3(x)
         return F.log_softmax(x, dim=1)
+
+#Two-layer DAN model that uses Byte Pair Encoding
+class NN2DAN_BPE(nn.Module):
+    def __init__(self, vocab_size, embed_size, hidden_size):
+        super().__init__()
+
+        #create a trainable vector for every vocab entry
+        self.embedding = nn.Embedding(
+            vocab_size,
+            embed_size,
+            padding_idx=0)
+
+        self.dropout = nn.Dropout(0.6)
+        self.fc1 = nn.Linear(embed_size, hidden_size)
+        self.fc2 = nn.Linear(hidden_size, 2)
+
+    def forward(self, token_indices):
+        #lookup subword vectors
+        token_indices = token_indices.long()
+        word_vectors = self.embedding(token_indices)
+
+        #ignore padding when finding word vector averages
+        word_mask = (token_indices != 0).unsqueeze(-1)
+        word_vectors = word_vectors * word_mask
+        sentence_vectors = word_vectors.sum(dim=1)
+        word_counts = word_mask.sum(dim=1).clamp(min=1)
+        sentence_vectors = sentence_vectors/word_counts
+
+        #predict the sentiment class
+        x = F.relu(self.fc1(sentence_vectors))
+        x = self.dropout(x)
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1)
+
+
+#Two-layer DAN model that uses Byte Pair Encoding
+class NN3DAN_BPE(nn.Module):
+    def __init__(self, vocab_size, embed_size, hidden_size):
+        super().__init__()
+
+        self.embedding = nn.Embedding(
+            vocab_size,
+            embed_size,
+            padding_idx=0)
+
+        self.dropout = nn.Dropout(0.65)
+        self.fc1 = nn.Linear(embed_size, hidden_size)
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        self.fc3 = nn.Linear(hidden_size, 2)
+
+    def forward(self, token_indices):
+        # lookup BPE subword vectors
+        token_indices = token_indices.long()
+        word_vectors = self.embedding(token_indices)
+
+        # ignore padding when finding word vector averages
+        word_mask = (token_indices != 0).unsqueeze(-1)
+        word_vectors = word_vectors * word_mask
+        sentence_vectors = word_vectors.sum(dim=1)
+        word_counts = word_mask.sum(dim=1).clamp(min=1)
+        sentence_vectors = sentence_vectors / word_counts
+
+        # predict the sentiment class
+        x = F.relu(self.fc1(sentence_vectors))
+        x = self.dropout(x)
+        x = F.relu(self.fc2(x))
+        x = self.dropout(x)
+        x = self.fc3(x)
+        return F.log_softmax(x, dim=1)
