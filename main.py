@@ -64,7 +64,13 @@ def eval_epoch(data_loader, model, loss_fn, optimizer):
 # Experiment function to run training and evaluation for multiple epochs
 def experiment(model, train_loader, test_loader):
     loss_fn = nn.NLLLoss()
+
+    #adam with 0.00005 learning rate works the best for random DAN
     optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
+    #sgd works best on DAN
+    #optimizer = torch.optim.SGD(model.parameters(), lr = 0.001)
+    #optimizer = torch.optim.NAdam(model.parameters(), lr = 0.00008)
+    #optimizer = torch.optim.AdamW(model.parameters(), lr = 0.0001)
 
     all_train_accuracy = []
     all_test_accuracy = []
@@ -99,11 +105,9 @@ def main():
     # Load dataset
     start_time = time.time()
 
-    #train_data = SentimentDatasetBOW("data/train.txt")
-    #dev_data = SentimentDatasetBOW("data/dev.txt", vectorizer=train_data.vectorizer, train=False)
-    #train_loader = DataLoader(train_data, batch_size=16, shuffle=True)
-    #test_loader = DataLoader(dev_data, batch_size=16, shuffle=False)
-
+    #check whether a dataset is provided as an argument
+    if args.datapath is None:
+        args.datapath = "glove.6B.300d-relativized.txt"
 
     if args.model == "BOW":
         train_data = SentimentDatasetBOW("data/train.txt")
@@ -184,12 +188,12 @@ def main():
 
     elif args.model == "DAN":
         print('\n2 layers:')
-        nn2_train_accuracy, nn2_test_accuracy = experiment(NN2DAN(input_size=300, hidden_size=100), train_loader,
+        nn2_train_accuracy, nn2_test_accuracy = experiment(NN2DAN(input_size=300, hidden_size=200), train_loader,
                                                            test_loader)
 
         # Train and evaluate NN3
         print('\n3 layers:')
-        nn3_train_accuracy, nn3_test_accuracy = experiment(NN3DAN(input_size=300, hidden_size=100), train_loader,
+        nn3_train_accuracy, nn3_test_accuracy = experiment(NN3DAN(input_size=300, hidden_size=200), train_loader,
                                                            test_loader)
 
         # Plot the training accuracy

@@ -45,13 +45,15 @@ class NN2DAN(nn.Module):
         self.fc1 = nn.Linear(input_size, hidden_size)
         self.fc2 = nn.Linear(hidden_size, 2)
         self.log_softmax = nn.LogSoftmax(dim=1)
-
+        #self.dropout = nn.Dropout(0.6)
     def forward(self, x):
         #learn hidden features
         x = F.relu(self.fc1(x))
         #create scores for both classes
+        #x = self.dropout(x)
         x = self.fc2(x)
-        return self.log_softmax(x)
+        x = self.log_softmax(x)
+        return x
 
 
 # Three-layer DAN model
@@ -63,14 +65,18 @@ class NN3DAN(nn.Module):
         self.fc3 = nn.Linear(hidden_size, 2)
         self.log_softmax = nn.LogSoftmax(dim=1)
 
+        #self.dropout = nn.Dropout(0.6)
+
     def forward(self, x):
         #first hidden layer
         x = F.relu(self.fc1(x))
         #second hidden layer
         x = F.relu(self.fc2(x))
+        #x = self.dropout(x)
         #find scores for both classes
         x = self.fc3(x)
-        return self.log_softmax(x)
+        x = self.log_softmax(x)
+        return x
 
 #Randomly initialized embeddings
 class SentimentDatasetDANRandom(Dataset):
@@ -198,7 +204,7 @@ class NN2DAN_BPE(nn.Module):
             embed_size,
             padding_idx=0)
 
-        self.dropout = nn.Dropout(0.6)
+        self.dropout = nn.Dropout(0.55)
         self.fc1 = nn.Linear(embed_size, hidden_size)
         self.fc2 = nn.Linear(hidden_size, 2)
 
