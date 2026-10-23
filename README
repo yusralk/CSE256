@@ -1,1 +1,25 @@
+How to run the models:
+Bag of Words:
+BOW: python main.py --model BOW
+
+Deep Averaging Network
+DAN: python main.py --model DAN
+or
+DAN: python main.py --model DAN --datapath glove.6B.300d-relativized.txt
+DAN: python main.py --model DAN --datapath glove.6B.50d-relativized.txt
+
+Deep Averaging Network that uses Randomly Initialized Embeddings
+RANDAN: python main.py --model RandomDAN
+RANDAN: python main.py --model RandomDAN --datapath glove.6B.300d-relativized.txt
+RANDAN: python main.py --model RandomDAN --datapath glove.6B.50d-relativized.txt
+
+Byte Pair Encoding:
+BPEDAN: python main.py --model BPEDAN
+BPEDAN: python main.py --model BPEDAN --datapath glove.6B.300d-relativized.txt
+BPEDAN: python main.py --model BPEDAN --datapath glove.6B.50d-relativized.txt
+
+**for all DAN models I added the option to run it with the data filename as an
+additional argument but it defaults to the "glove.6B.300d-relativized.txt" if
+nothing is passed in as an argument. However if you choose to pass in a filename
+the options are "glove.6B.300d-relativized.txt" and "glove.6B.50d-relativized.txt"
 

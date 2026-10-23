@@ -105,9 +105,18 @@ def main():
     # Load dataset
     start_time = time.time()
 
+    #setup variables for input and hidden size
+    input_size_var = 0
+    hidden_size_var = 0
     #check whether a dataset is provided as an argument
     if args.datapath is None:
         args.datapath = "glove.6B.300d-relativized.txt"
+    if args.datapath == "glove.6B.300d-relativized.txt":
+        input_size_var = 300
+        hidden_size_var = 200
+    elif args.datapath == "glove.6B.50d-relativized.txt":
+        input_size_var = 50
+        hidden_size_var = 20
 
     if args.model == "BOW":
         train_data = SentimentDatasetBOW("data/train.txt")
@@ -188,12 +197,12 @@ def main():
 
     elif args.model == "DAN":
         print('\n2 layers:')
-        nn2_train_accuracy, nn2_test_accuracy = experiment(NN2DAN(input_size=300, hidden_size=200), train_loader,
+        nn2_train_accuracy, nn2_test_accuracy = experiment(NN2DAN(input_size=input_size_var, hidden_size=hidden_size_var), train_loader,
                                                            test_loader)
 
         # Train and evaluate NN3
         print('\n3 layers:')
-        nn3_train_accuracy, nn3_test_accuracy = experiment(NN3DAN(input_size=300, hidden_size=200), train_loader,
+        nn3_train_accuracy, nn3_test_accuracy = experiment(NN3DAN(input_size=input_size_var, hidden_size=hidden_size_var), train_loader,
                                                            test_loader)
 
         # Plot the training accuracy
@@ -230,12 +239,12 @@ def main():
 
     elif args.model == "RandomDAN":
         print('\n2 layers:')
-        nn2_train_accuracy, nn2_test_accuracy = experiment(NN2DAN_RANDOM(embed_size=300, hidden_size=200, embed_path="data/" + args.datapath), train_loader,
+        nn2_train_accuracy, nn2_test_accuracy = experiment(NN2DAN_RANDOM(embed_size=input_size_var, hidden_size=hidden_size_var, embed_path="data/" + args.datapath), train_loader,
                                                            test_loader)
 
         # Train and evaluate NN3
         print('\n3 layers:')
-        nn3_train_accuracy, nn3_test_accuracy = experiment(NN3DAN_RANDOM(embed_size=300, hidden_size=200, embed_path="data/" + args.datapath), train_loader,
+        nn3_train_accuracy, nn3_test_accuracy = experiment(NN3DAN_RANDOM(embed_size=input_size_var, hidden_size=hidden_size_var, embed_path="data/" + args.datapath), train_loader,
                                                            test_loader)
 
         # Plot the training accuracy
@@ -271,8 +280,8 @@ def main():
     elif args.model == "BPEDAN":
         print('\n2 layers:')
         nn2_train_accuracy, nn2_test_accuracy = experiment(
-            NN2DAN_BPE(embed_size=300,
-                       hidden_size=200,
+            NN2DAN_BPE(embed_size=input_size_var,
+                       hidden_size=hidden_size_var,
                        vocab_size=train_data.vocab_size),
             train_loader,
             test_loader)
@@ -280,8 +289,8 @@ def main():
         # Train and evaluate NN3
         print('\n3 layers:')
         nn3_train_accuracy, nn3_test_accuracy = experiment(
-            NN3DAN_BPE(embed_size=300,
-                       hidden_size=200,
+            NN3DAN_BPE(embed_size=input_size_var,
+                       hidden_size=hidden_size_var,
                        vocab_size=train_data.vocab_size),
             train_loader,
             test_loader)
